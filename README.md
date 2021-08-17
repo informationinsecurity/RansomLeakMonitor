@@ -14,7 +14,7 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 
 
 ## Installation
-- Install some missing tools - ```sudo apt install build-essential git libdbus-glib-1-dev libgirepository1.0-dev```
+- Install some missing tools - ```sudo apt install build-essential git libdbus-glib-1-dev libgtk-3-0 libgirepository1.0-dev```
 - Install MySQL - https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
   - NOTE: MySQL doesn't like root logons anymore- create a user with good privs - https://devanswers.co/phpmyadmin-access-denied-for-user-root-localhost/
 - Install phpMyAdmin - https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-20-04
