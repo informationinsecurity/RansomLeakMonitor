@@ -1,6 +1,11 @@
 # RansomLeakMonitor
 This tool is meant to help automate the identification of new victims that are posted to common threat actor leak sites. 
 
+## Features
+- Scan leak sites for new victims and alert via Discord or Teams
+- Store images of the leak site and  victims in MySQL database for retention
+- Easily add additional parsers as new sites come online
+
 ## Requirements
 This tool was tested using ubuntu 20.04 server. Other requirements include:
 - Phpmyadmin (any version, just for simple db modification)
