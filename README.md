@@ -21,7 +21,7 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 - Install TOR (```sudo apt-get install tor```)
 - Install TOR Bundle (browser package used for screenshots)- https://www.torproject.org/download/
 - Install TOR-Browser-Selenium - follow instructions for installing here: https://github.com/webfp/tor-browser-selenium - make sure to copy the gecko driver to ```/usr/bin``` and do not skip xvfb install either!
-- Install some missing dependencies: ```pip3 install pysocks mysql-connector-pythonurllib3 requests regex proxies dbus-python```
+- Install some missing dependencies: ```pip3 install pysocks mysql-connector-python urllib3 requests regex proxies dbus-python```
 - Clone this repository and navigate to it
 - Run ```pip3 install -r requirements.txt``` to satisfy python dependencies
 - Import ransomleakmonitor.sql into phpmyadmin to reproduce the database and schema
