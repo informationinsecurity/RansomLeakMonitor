@@ -23,7 +23,7 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 - Edit config.yaml to include proper webhooks, database info, imagbb api details, and threat actor URLs
 
 ## Running RansomLeakMonitor
-- python3 allinone.py
+```python3 allinone.py```
 
 ## Setting RansomLeakMonitor to run on a schedule
 For linux, cron does a great job - run ```crontab -e``` and enter:
