@@ -2,7 +2,7 @@
 This tool is meant to help automate the identification of new victims that are posted to common threat actor leak sites. 
 
 ## Features
-- Scan leak sites for new victims and alert via Discord or Teams
+- Scan 20 leak sites for new victims and alert via Discord or Teams
 - Store images of the leak site and  victims in MySQL database for retention
 - Easily add additional parsers as new sites come online
 
