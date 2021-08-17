@@ -14,13 +14,13 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 
 
 ## Installation
+- Install some missing tools - ```sudo apt install build-essential git libdbus-glib-1-dev libgirepository1.0-dev```
 - Install MySQL - https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
   - NOTE: MySQL doesn't like root logons anymore- create a user with good privs - https://devanswers.co/phpmyadmin-access-denied-for-user-root-localhost/
 - Install phpMyAdmin - https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-20-04
 - Install TOR (```sudo apt-get install tor```)
 - Install TOR Bundle (browser package used for screenshots)- https://www.torproject.org/download/
 - Install TOR-Browser-Selenium - follow instructions for installing here: https://github.com/webfp/tor-browser-selenium - make sure to copy the gecko driver to ```/usr/bin``` and do not skip xvfb install either!
-- Install some missing tools - ```sudo apt install build-essential libdbus-glib-1-dev libgirepository1.0-dev```
 - Install some missing dependencies: ```pip3 install pysocks urllib3 requests regex proxies dbus-python```
 - Clone this repository
 - Run pip3 install -r requirements.txt to satisfy python dependencies
