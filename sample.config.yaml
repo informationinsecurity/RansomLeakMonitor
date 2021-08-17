@@ -1,0 +1,62 @@
+webhooks:
+
+#Enter your Teams and/or Discord Webhook addresses
+  teams: <Teams Webhook here> 
+
+  discord: <Discord Webhook here> 
+
+#enter db info for backend storage
+database:
+  #write to the database true / false
+  writedb: true
+  host: 
+  user: 
+  password: 
+  database: 
+
+#set working directory for script (should be working dir of ransomleakmonitor) - ex: /home/user/ransomleakmonitor
+working_dir: 
+
+#enter notification settings - these will post when new items are detected - true or false
+notifications:
+  teamsnotify: true 
+  discordnotify: true 
+
+#screenshots can be saved on each run to the database for notifications - true or false
+screenshot: true 
+
+#IMGBB API KEY - FOR TEAMS TO DISPLAY IMAGES - teams can't take the image natively so it's being uploaded to imgbb
+imgbb_key: <imgbb api key here>
+imgbb_url: <imgbb api upload url> 
+
+#enter settings for torbrowser for screenshot settings - ex: /home/user/tor-browser_en-US/
+torbrowser:
+  tbbdir: 
+
+#enter TOR SOCKS5 proxy info - leave as is for regular TOR SOCKS Proxy
+proxies:
+  http: 127.0.0.1:9050
+  https: 127.0.0.1:9050
+
+#URLS for the leak sites - unless otherwise noted, use the full path ex- http://leaksite.onion - no trailing slashes! 
+ta_urls:
+  avoslocker: 
+  #clop: 
+  conti:
+  #cuba: 
+  everest:   
+  # HIVE uses an API link - please use that - it should end in /v1/companies/disclosed - ex - http://hiveapisite.onion/v1/companies/disclosed 
+  hive: 
+  lockbit: 
+  lorenz: 
+  nefilim: 
+  pay2key: 
+  # PYSA site url should have /partners.html appended - ex - http://leaksite.onion/partners.html 
+  pysa: 
+  ransomexx: 
+  ragnarlocker:   
+  # Suncrypt needs to have /clients appended - ex http://leaksite.onion/clients 
+  suncrypt:  
+  synack:  
+  vicesociety: 
+  xing: 
