@@ -15,9 +15,9 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 
 ## Installation
 - Install some missing tools - ```sudo apt install build-essential git libdbus-glib-1-dev libgtk-3-0 libgirepository1.0-dev```
-- Install MySQL - https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
+- Install MySQL - ```sudo apt-get install mysql-server ``` - https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
   - NOTE: MySQL doesn't like root logons anymore- create a user with good privs - https://devanswers.co/phpmyadmin-access-denied-for-user-root-localhost/
-- Install phpMyAdmin - https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-20-04
+- Install phpMyAdmin - ```sudo apt install phpmyadmin php-mbstring php-zip php-gd php-json php-curl``` -  https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-20-04
 - Install TOR (```sudo apt-get install tor```)
 - Install TOR Bundle (browser package used for screenshots)- https://www.torproject.org/download/
 - Install TOR-Browser-Selenium - follow instructions for installing here: https://github.com/webfp/tor-browser-selenium - make sure to copy the gecko driver to ```/usr/bin``` and do not skip xvfb install either!
