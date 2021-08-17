@@ -15,7 +15,7 @@ This tool was tested using ubuntu 20.04 server. Other requirements include:
 
 ## Installation
 - Install MySQL - https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
-  - NOTE: I had issues with MySQL using auth_socket insteald of password. This can be fixed via googling.
+  - NOTE: MySQL doesn't like root logons anymore- create a user with good privs - https://devanswers.co/phpmyadmin-access-denied-for-user-root-localhost/
 - Install phpMyAdmin - https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-20-04
 - Install TOR (```sudo apt-get install tor```)
 - Install TOR Bundle (browser package used for screenshots)- https://www.torproject.org/download/
