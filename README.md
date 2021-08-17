@@ -10,7 +10,7 @@ This tool is meant to help automate the identification of new victims that are p
 This tool was tested using ubuntu 20.04 server. Other requirements include:
 - Phpmyadmin (any version, just for simple db modification)
 - MySQL (likely any reasonably up to date version)
-- Python3 - I am using Python 3.8
+- Python3 - I am using Python 3.8 and pip3 (```sudo apt-get install python3-pip```)
 
 
 ## Installation
