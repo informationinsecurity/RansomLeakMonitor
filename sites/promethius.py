@@ -26,7 +26,8 @@ import allinone as aio
 def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url):
     imgbb_image_url = ""
     mycursor = mydb.cursor()
-    page = requests.get(ta_url, timeout=30, proxies=proxies)
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
     #working pulling victims of promethius
     div = soup.find_all("h2", class_="entry-title heading-size-1")
@@ -36,7 +37,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
             victim_links = victim_links
             print(victim_links)
             print("Pulling Victim from Page" + victim_links)
-            vicpage = requests.get(victim_links, timeout=30, proxies=proxies)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers)
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
             vicdiv = vicsoup.find("h1", class_="entry-title")
             victim = vicdiv.text
