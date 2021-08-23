@@ -27,7 +27,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
     imgbb_image_url = ""
     mycursor = mydb.cursor()
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
-    page = requests.get(ta_url, timeout=30, proxies=proxies)
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     #working pulling victims of arvin
