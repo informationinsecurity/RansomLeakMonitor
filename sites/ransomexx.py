@@ -28,7 +28,8 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
     imgbb_image_url = ""
     mycursor = mydb.cursor()
 
-    page = requests.get(ta_url, timeout=30, proxies=proxies)
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
     
     page_list = soup.find("ul", class_="pagination mb-0")
@@ -49,7 +50,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
        baseurl = baseurl + "?page=" + pagenum
        print("Scraping Page: " + pagenum + " URL is " + baseurl)
        #print(baseurl)
-       currentpage = requests.get(baseurl, timeout=30, proxies=proxies)
+       currentpage = requests.get(baseurl, timeout=30, proxies=proxies,headers=headers)
        soups = BeautifulSoup(currentpage.content, 'html.parser')
        victim_list = soups.find_all("div", class_="card-body")
        for victims in victim_list:
