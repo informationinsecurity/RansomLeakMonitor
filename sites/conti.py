@@ -27,7 +27,8 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
     mycursor = mydb.cursor()
     
     #working for Conti
-    page = requests.get(ta_url, timeout=30, proxies=proxies)
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     page_list = soup.find("ul", class_="pages")
@@ -41,7 +42,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
        baseurl = baseurl + "/page/" + pagenum
        print("page number ", pagenum)
        print("Scraping from" , baseurl)
-       currentpage = requests.get(baseurl, timeout=30, proxies=proxies)
+       currentpage = requests.get(baseurl, timeout=30, proxies=proxies, headers=headers)
        soups= BeautifulSoup(currentpage.content, 'html.parser')
        victim_divs = soups.find_all("div", class_="card")
        for div in victim_divs:
