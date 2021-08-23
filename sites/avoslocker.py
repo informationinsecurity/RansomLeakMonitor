@@ -26,8 +26,10 @@ import allinone as aio
 
 def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url):
     imgbb_image_url = "" 
-    mycursor = mydb.cursor() 
-    page = requests.get(ta_url, timeout=30, proxies=proxies)
+    mycursor = mydb.cursor()
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
+    
     soup = BeautifulSoup(page.content, 'html.parser')
     div = soup.find_all("p", class_="poet-read-more")
     #pulls links for each victim post - otherwise names are truncated with ...
