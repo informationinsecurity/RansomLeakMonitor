@@ -211,6 +211,9 @@ def main():
         if isup == True: 
             screenshot_site(ta_url,ta)                                                                                                          
             update_lastseen(ta,timestamp)
-            threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
+            try: 
+                threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
+            except:
+                print("Scrapting of " + ta + " has failed!")
 if __name__== "__main__":
   main()
