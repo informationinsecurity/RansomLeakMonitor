@@ -36,7 +36,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
             victim_links = victim_links['href']
             victim_links = ta_url + victim_links
             print("Pulling Victim from Page" + victim_links)
-            vicpage = requests.get(victim_links, timeout=30, proxies=proxies)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers)
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
             vicdiv = vicsoup.find("h2", class_="mb-5")
             victim = vicdiv.text
