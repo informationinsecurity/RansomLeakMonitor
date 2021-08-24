@@ -36,6 +36,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
         victims = victim_list.find_all("span")
         for victim in victims:
             victim  = victim.text
+            victim = victim.strip() 
             print(victim)
             victim_links = ta_url
             date = timestamp
