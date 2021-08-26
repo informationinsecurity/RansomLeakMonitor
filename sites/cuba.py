@@ -25,6 +25,7 @@ import allinone as aio
 #working pulling victims of AvosLocker
 
 def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url):
+    victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
@@ -45,7 +46,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
             date = timestamp
             print("Date is: ")
             print(date)
-
+            victim_count += 1
 
             dupecheck = "SELECT EXISTS(SELECT * from rw_victims where victim like '" + victim + "')"
             mycursor.execute(dupecheck)
@@ -103,3 +104,4 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                     if screenshot_success == True:
                         imgbb_image_url = aio.upload_screenshot(victim_screenshot,imgbb_url,imgbb_key)
                     aio.notifications(imgbb_image_url,victim,victim_links, victim_screenshot,ta,screenshot_success)
+    print(victim_count)

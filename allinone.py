@@ -156,7 +156,8 @@ def screenshot_site(ta_url,ta):
   try:
       # start a virtual display
       xvfb_display = start_xvfb()
-      with TorBrowserDriver(tbb_dir) as driver:
+      ss_path = workingdir + "/runlog.log"
+      with TorBrowserDriver(tbb_dir, tbb_logfile_path=ss_path) as driver:
           driver.load_url(ta_url)
           time.sleep(3)
           height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
