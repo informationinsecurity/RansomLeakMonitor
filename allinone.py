@@ -157,7 +157,8 @@ def screenshot_site(ta_url,ta):
       # start a virtual display
       xvfb_display = start_xvfb()
       ss_path = workingdir + "/runlog.log"
-      with TorBrowserDriver(tbb_dir, tbb_logfile_path=ss_path) as driver:
+      #with TorBrowserDriver(tbb_dir, tbb_logfile_path=ss_path) as driver:
+      with TorBrowserDriver(tbb_dir) as driver:
           driver.load_url(ta_url)
           time.sleep(3)
           height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
@@ -213,5 +214,6 @@ def main():
             screenshot_site(ta_url,ta)                                                                                                          
             update_lastseen(ta,timestamp)
             threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
+
 if __name__== "__main__":
   main()
