@@ -43,6 +43,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
             vicdiv = vicsoup.find("div", class_="text-center pt-4")
             victim = vicdiv.text
+            victim = victim.strip() 
             print(victim)
             date = timestamp
             print("Date is: ")

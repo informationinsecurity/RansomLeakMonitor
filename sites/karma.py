@@ -22,6 +22,7 @@ import sys
 sys.path.append("..")
 import allinone as aio
 
+#working pulling victims of AvosLocker
 
 def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url):
     victim_count = 0
@@ -30,18 +31,17 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
     page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
-    
-    #working pulling victims of Lockbitv2
-    div = soup.find_all("div", class_="news--heading")
+
+    div = soup.find_all("h2", class_="entry-title")
+    #pulls links for each victim post - otherwise names are truncated with ...
     for links in div:
         for victim_links in links.find_all("a", href=True):
             victim_links = victim_links['href']
             print("Pulling Victim from Page" + victim_links)
-            vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies)
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
-            vicdiv = vicsoup.find("h2", class_="h2 name-news")
-            victim = vicdiv.text
-            victim = victim.replace("'","") 
+            vicdiv = vicsoup.title.string
+            victim = vicdiv
             print(victim)
             date = timestamp
             print("Date is: ")
@@ -60,6 +60,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                 if writedb == True:
                     mycursor.execute(sql, val)
                     mydb.commit()
+
                 if screenshot == True:
                     time.sleep(3)
                     victim_screenshot = workingdir + "victims/" + victim + ".png"
@@ -80,7 +81,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                             driver.get_screenshot_as_file(out_img)
                             print("Screenshot is saved as %s" % out_img)
 
-                            stop_xvfb(xvfb_display)
+                        stop_xvfb(xvfb_display)
 
                         #EDIT LATER TO GET VICTIM SCREENSHOTS INTO DB#####
                         #sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
@@ -91,6 +92,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                         #def get_base64_encoded_image(image_path):
                         #    with open(image_path, "rb") as img_file:
                         #        return base64.b64encode(img_file.read()).decode('utf-8')
+
                         #data = get_base64_encoded_image(ta_screenshot)
                         #encoded_fig = f"data:image/png;base64,{data}"
                         #print("Image saved to database")

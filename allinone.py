@@ -211,9 +211,18 @@ def main():
         ta_url = data['ta_urls'][ta]  
         isup = check_status(ta_url,ta)
         if isup == True: 
-            screenshot_site(ta_url,ta)                                                                                                          
-            update_lastseen(ta,timestamp)
-            threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
-
+            if screenshot == True: 
+                try: 
+                    screenshot_site(ta_url,ta)                                                                                                          
+                except:
+                    print("screenshot failed!")
+            try:  
+                update_lastseen(ta,timestamp)
+            except:
+                print("update last seen failed!")
+            try: 
+                threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
+            except:
+                print("Scraping for " + ta + " failed!")  
 if __name__== "__main__":
   main()
