@@ -8,8 +8,6 @@ import yaml
 with open("../config.yaml", "r") as yamlfile:
     data = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-#Post to Teams true or false
-teamsnotify = data['notifications']['teamsnotify']
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = data['database']['host'] 
 app.config['MYSQL_USER'] = data['database']['user']
