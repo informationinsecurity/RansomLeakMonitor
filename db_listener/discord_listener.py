@@ -7,13 +7,16 @@ import mysql.connector
 from mysql.connector import connect, Error
 import json
 
-mydb = mysql.connector.connect(
-  host='localhost',
-  user='root',
-  password='password',
-  database='ransom'
-)
+with open("../config.yaml", "r") as yamlfile:
+    data = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
+
+mydb = mysql.connector.connect(
+  host=data['database']['host'],
+  user=data['database']['user'],
+  password=data['database']['password'],
+  database=data['database']['database']
+)
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
