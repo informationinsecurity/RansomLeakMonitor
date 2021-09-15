@@ -29,7 +29,8 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
     imgbb_image_url = "" 
     mycursor = mydb.cursor()
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
-    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
+    cookies = {'session': 's%3AsDUSEt_bCbXm-aC6Ok6rY50hYv4aFvqs.6QSQ0GEp%2FPmq4Ae9JH3I2EQes%2FpA3hI58k7r4OsWbGA'}
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers,cookies=cookies)
     
     soup = BeautifulSoup(page.content, 'html.parser')
     div = soup.find_all("p", class_="poet-read-more")
@@ -39,7 +40,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
             victim_links = victim_links['href']
             victim_links = ta_url + victim_links
             print("Pulling Victim from Page" + victim_links)
-            vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers,cookies=cookies)
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
             vicdiv = vicsoup.find("h1")
             victim = vicdiv.text
@@ -104,4 +105,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                     if screenshot_success == True: 
                         imgbb_image_url = aio.upload_screenshot(victim_screenshot,imgbb_url,imgbb_key) 
                     aio.notifications(imgbb_image_url,victim,victim_links, victim_screenshot,ta,screenshot_success)
-    print("Total Victim Count for " + ta + ": " + str(victim_count))
+    if victim_count > 0:
+        print("Total Victim Count for " + ta + ": " + str(victim_count))
+    if victim_count == 0:
+        aio.notifications_scraper_broken(ta)

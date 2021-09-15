@@ -202,6 +202,15 @@ def update_lastseen(ta,timestamp):
   except:
       print("Unable to update Last Seen time in DB!")
 
+def notifications_scraper_broken(ta):
+    #If teamsnotify set to true - post data to teams
+    if teamsnotify == True:
+        print("Scraper Appears Broken! Sending Teams Notification")
+        myTeamsMessage = pymsteams.connectorcard(teams_webhook)
+        #myMessageSection = pymsteams.cardsection()
+        myTeamsMessage.text('Warning! Scraper ' + ta +' appears to be broken!')
+        myTeamsMessage.send()
+
 def main():
     for ta in threatactors:  
         #sets module to proper TA for scraping 

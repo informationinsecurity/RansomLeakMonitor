@@ -32,7 +32,11 @@ def index():
                 vic_name = json.loads(str_obj)
                 victim = vic_name['victim']
                 victim = victim.strip()
-                victim = ''.join(e for e in victim if e.isalnum())
+                victim = victim.replace("\"","") 
+                victim = victim.replace("\\","") 
+                victim = victim.replace("'","")
+                victim = victim.replace("}","") 
+                #victim = ''.join(e for e in victim if e.isalnum())
                 if victim == "":
                     return "PLEASE ENTER A SEARCH TERM"
                 print("Victim you are searching for is: " + victim)

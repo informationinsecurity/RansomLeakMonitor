@@ -99,4 +99,7 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                     if screenshot_success == True:
                         imgbb_image_url = aio.upload_screenshot(victim_screenshot,imgbb_url,imgbb_key)
                     aio.notifications(imgbb_image_url,victim,victim_links, victim_screenshot,ta,screenshot_success)
-    print("Total Victim Count for " + ta + ": " + str(victim_count))
+    if victim_count > 0:
+        print("Total Victim Count for " + ta + ": " + str(victim_count))
+    if victim_count == 0:
+        aio.notifications_scraper_broken(ta)
