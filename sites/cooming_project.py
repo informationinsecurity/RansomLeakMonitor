@@ -22,24 +22,26 @@ import sys
 sys.path.append("..")
 import allinone as aio
 
+#working pulling victims of Cooming Project
+
 def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
     victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
-    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'} 
+
+    #working pulling victims of Cooming_project
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
     page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
-    
-    #working pulling victims of lorenz
-    div = soup.find_all("h6")
+
+    #working pulling victims of vice
+    div = soup.find_all("font", color="#FFFFFF")
     for items in div:
-        victim = items.get_text()
-        victim_links = items.find("a", href=True)
-        victim_links = victim_links['href']
-        victim_links = ta_url + victim_links
-        date = timestamp
+        victim = items.text
+        victim = victim.replace("'", "")
         print(victim)
-        print(victim_links)
+        victim_links = ta_url
+        date = timestamp
         print(date)
         victim_count += 1
         dupecheck = "SELECT EXISTS(SELECT * from rw_victims where victim like '" + victim + "')"
@@ -75,7 +77,9 @@ def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_di
                         driver.set_window_size(900,height+100)
                         driver.get_screenshot_as_file(out_img)
                         print("Screenshot is saved as %s" % out_img)
+
                         stop_xvfb(xvfb_display)
+
                     #EDIT LATER TO GET VICTIM SCREENSHOTS INTO DB#####
                     #sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
                     #ta_screenshot_blob = convertToBinaryData(out_img)

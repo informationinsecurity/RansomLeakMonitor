@@ -22,34 +22,38 @@ import sys
 sys.path.append("..")
 import allinone as aio
 
-#working pulling victims of AvosLocker
+#working pulling victims of Cooming Project
 
 def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
-    victim_count = 0 
+    victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
 
-    #working pulling victims of suncrypt
-    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
-    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    
-    div = soup.find_all("div", class_="card-content")
-    for items in div:
-        for victims in items:
-            victims = items.find_all("a", class_="mr-7")
-            for victim in victims:
-                victim_links = victim['href']
+
+    for i in range(1,11):
+        currentpage = i
+        headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
+        victim_url = ta_url + "index.php?page=" + str(currentpage)
+        print("current page is: " + victim_url)
+        page = requests.get(victim_url, timeout=30, proxies=proxies)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        div = soup.find_all("h2")
+        for links in div:
+            for victim_links in links.find_all("a", href=True):
+                victim_links = victim_links['href']
                 victim_links = ta_url + victim_links
-                victim_links = victim_links.replace("clients","")
+                print("Pulling Victim from Page " + victim_links)
+                vicpage = requests.get(victim_links, timeout=30, proxies=proxies, headers=headers)
+                vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
+                victim = vicsoup.find_all("h1")[1]
                 victim = victim.text
+                victim = victim.strip()
                 victim = victim.replace("'", "")
                 print(victim)
                 date = timestamp
+                print("Date is: ")
                 print(date)
-                print(victim_links)
                 victim_count += 1
-
                 dupecheck = "SELECT EXISTS(SELECT * from rw_victims where victim like '" + victim + "')"
                 mycursor.execute(dupecheck)
                 duperesult = mycursor.fetchall()
@@ -63,7 +67,7 @@ def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_di
                     if writedb == True:
                         mycursor.execute(sql, val)
                         mydb.commit()
-    
+
                     if screenshot == True:
                         time.sleep(3)
                         victim_screenshot = workingdir + "victims/" + victim + ".png"
@@ -83,9 +87,9 @@ def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_di
                                 driver.set_window_size(900,height+100)
                                 driver.get_screenshot_as_file(out_img)
                                 print("Screenshot is saved as %s" % out_img)
-    
+
                                 stop_xvfb(xvfb_display)
-    
+
                             #EDIT LATER TO GET VICTIM SCREENSHOTS INTO DB#####
                             #sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
                             #ta_screenshot_blob = convertToBinaryData(out_img)

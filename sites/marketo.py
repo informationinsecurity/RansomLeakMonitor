@@ -22,31 +22,34 @@ import sys
 sys.path.append("..")
 import allinone as aio
 
+#working pulling victims of AvosLocker
+
 def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
     victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
-
-    #working pulling victims of pay2key
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
     page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
-    
-    victim_list = soup.find_all("div", class_="article")
-    
-    for victim in victim_list:
-        victim_name = victim.find_all("h3")
-        for victim in victim_name:
-            victim_links = victim.find("a", href=True)
-            victim_links = victim_links['href'][1:]
+    #working pulling victims of Lockbitv2
+    div = soup.find_all("div", class_="row w-100 m-0 text-title justify-content-between text-truncate")
+    #pulls links for each victim post - otherwise names are truncated with ...
+    for links in div:
+        for victim_links in links.find_all("a", href=True):
+            victim_links = victim_links['href']
             victim_links = ta_url + victim_links
-            victim = victim.text
+            print("Pulling Victim from Page" + victim_links)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies,headers=headers)
+            vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
+            vicdiv = vicsoup.find("div", class_="row m-0 w-100 text-title justify-content-between")
+            victim = vicdiv.text
+            victim = victim.replace('New', '')
+            victim = victim.strip()
             print(victim)
             date = timestamp
+            print("Date is: ")
             print(date)
-            print(victim_links)
             victim_count += 1
-
             dupecheck = "SELECT EXISTS(SELECT * from rw_victims where victim like '" + victim + "')"
             mycursor.execute(dupecheck)
             duperesult = mycursor.fetchall()
@@ -80,7 +83,9 @@ def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_di
                             driver.set_window_size(900,height+100)
                             driver.get_screenshot_as_file(out_img)
                             print("Screenshot is saved as %s" % out_img)
-                            stop_xvfb(xvfb_display)
+
+                        stop_xvfb(xvfb_display)
+
                         #EDIT LATER TO GET VICTIM SCREENSHOTS INTO DB#####
                         #sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
                         #ta_screenshot_blob = convertToBinaryData(out_img)
@@ -90,6 +95,7 @@ def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_di
                         #def get_base64_encoded_image(image_path):
                         #    with open(image_path, "rb") as img_file:
                         #        return base64.b64encode(img_file.read()).decode('utf-8')
+
                         #data = get_base64_encoded_image(ta_screenshot)
                         #encoded_fig = f"data:image/png;base64,{data}"
                         #print("Image saved to database")

@@ -17,6 +17,11 @@ from tbselenium.tbdriver import TorBrowserDriver
 from tbselenium.utils import start_xvfb, stop_xvfb
 import base64
 #import sites.avoslocker as avoslocker
+from selenium import webdriver
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from stem import Signal
+from stem.control import Controller
 
 with open("config.yaml", "r") as yamlfile:
     data = yaml.load(yamlfile, Loader=yaml.FullLoader)
@@ -56,8 +61,21 @@ threatactors = data['ta_urls']
 #Path to Torbrowser (for screenshot)
 tbb_dir = data['torbrowser']['tbbdir']
 
+#TOR FF Path
+tor_ff_path = data['torbrowser']['tor_ff_path']
+
+#TOR CONTROL PASSWORD (FOR NEW IDENTITIES)
+tor_control_pass = data['torbrowser']['tor_control_pass']
+
+#FireFox Binary (which firefox)
+ff_binary = data['torbrowser']['ff_binary']
+
+#firefox profile (tor ff profile path)
+ff_profile = data['torbrowser']['ff_profile']
+
+
 #Working Directory for script
-workingdir = data['working_dir'] 
+workingdir = data['working_dir']
 
 #used to get timestamps for db entries
 timestamp = datetime.now()
@@ -71,7 +89,7 @@ isup = ''
 
 #checks status of TA site to make sure it's online
 def check_status(ta_url,ta):
-    isup = "" 
+    isup = ""
     print("Checking  " + ta + " site status: ")
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
     try:
@@ -86,7 +104,7 @@ def check_status(ta_url,ta):
         print(ta + " site is offline!")
         # last_seen = last_seen[0]
         # print(ta + " leak site last seen " + last_seen)
-    return isup 
+    return isup
 
 #converts screen shot to b64 for database
 def get_base64_encoded_image(image_path):
@@ -113,7 +131,7 @@ def upload_screenshot(ta_screenshot,imgbb_url,imgbb_key):
   imgbb_image_url = json_response['data']['url']
   return imgbb_image_url
 
- 
+
 def notifications(imgbb_image_url,victim,victim_links,victim_screenshot,ta,screenshot_success):
     #If teamsnotify set to true - post data to teams
     if teamsnotify == True:
@@ -123,7 +141,7 @@ def notifications(imgbb_image_url,victim,victim_links,victim_screenshot,ta,scree
         myMessageSection.title(victim)
         myMessageSection.activityTitle('Threat Group: ' + ta)
         myMessageSection.activityText('Victim Link: ' + victim_links)
-        if screenshot_success == True: 
+        if screenshot_success == True:
             myMessageSection.addImage(imgbb_image_url, ititle="TA_Screenshot")
             myTeamsMessage.addLinkButton("View Screenshot", imgbb_image_url)
         myTeamsMessage.addSection(myMessageSection)
@@ -132,7 +150,7 @@ def notifications(imgbb_image_url,victim,victim_links,victim_screenshot,ta,scree
 
     #If discordnotify set to true - post data to discord_webhook
     if discordnotify == True:
-        print("Sending Discord Notifications") 
+        print("Sending Discord Notifications")
         discord_notify = DiscordWebhook(url=discord_webhook, username="Hermes")
         embed = DiscordEmbed(title='New Victim Posted', color='238076')
         embed.set_timestamp()
@@ -144,50 +162,54 @@ def notifications(imgbb_image_url,victim,victim_links,victim_screenshot,ta,scree
             with open(victim_screenshot, "rb") as f:
                 discord_notify.add_file(file=f.read(), filename=discordpicturename)
         discord_notify.add_embed(embed)
-        response = discord_notify.execute() 
+        response = discord_notify.execute()
 
 #captures screenshot for given ta_url
 def screenshot_site(ta_url,ta):
   print("Grabbing Screenshot of " + ta + "leak site")
-  print(ta_url) 
-  #print(tbb_dir) 
-  out_img = workingdir + "screenshots/" + ta + ".png" 
-  
-  try:
-      # start a virtual display
-      xvfb_display = start_xvfb()
-      ss_path = workingdir + "/runlog.log"
-      #with TorBrowserDriver(tbb_dir, tbb_logfile_path=ss_path) as driver:
-      with TorBrowserDriver(tbb_dir) as driver:
-          driver.load_url(ta_url)
-          time.sleep(3)
-          height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
-          driver.set_window_size(900,height+100)
-          driver.get_screenshot_as_file(out_img)
-          print("Screenshot is saved as %s" % out_img)
+  print(ta_url)
+  #print(tbb_dir)
+  out_img = workingdir + "screenshots/" + ta + ".png"
 
-      stop_xvfb(xvfb_display)
-      print("Screenshot Successful")
+  #os.popen('/home/ubuntu/tor-browser_en-US/Browser/firefox')
+
+  binary=FirefoxBinary('/usr/bin/firefox')
+  fp=FirefoxProfile('/home/ubuntu/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default')
+
+  fp.set_preference('extensions.torlauncher.start_tor',False)#note this
+  fp.set_preference('network.proxy.type',1)
+  fp.set_preference('network.proxy.socks', '127.0.0.1')
+  fp.set_preference('network.proxy.socks_port', 9050)
+  fp.set_preference("network.proxy.socks_remote_dns", True)
+  fp.update_preferences()
+  driver = webdriver.Firefox(firefox_profile=fp,firefox_binary=binary)
+  try:
+      driver.get(ta_url)
+      time.sleep(3)
+      height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
+      driver.set_window_size(900,height+100)
+      driver.get_screenshot_as_file(out_img)
+      print("Screenshot is saved as %s" % out_img)
+      driver.quit()
       screenshot_success = True
   except:
       print("Screenshot Failed")
       screenshot_success = False
-  print(screenshot_success)
 
   #If Screenshot worked, save a copy in the db
   if screenshot_success == True:
-      print("Attempting to update screenshot database") 
+      print("Attempting to update screenshot database")
       data = get_base64_encoded_image(out_img)
       encoded_fig = f"data:image/png;base64,{data}"
       sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
       ta_screenshot_blob = convertToBinaryData(out_img)
       insert_blob_tuple = (timestamp, ta, ta_screenshot_blob)
-      try: 
+      try:
           result = mycursor.execute(sql_insert_blob_query, insert_blob_tuple)
           mydb.commit()
           print("Screenshot for " + ta + " added to databse")
       except:
-          print("screenshot for " + ta + " failed!") 
+          print("screenshot for " + ta + " failed!")
 
 #update the last_seen database for each TA
 def update_lastseen(ta,timestamp):
@@ -195,7 +217,7 @@ def update_lastseen(ta,timestamp):
   last_seen = timestamp
   sql_update_seen = "INSERT INTO rw_status (id, actor, last_seen) VALUES (NULL, %s, %s)"
   seen_val = (ta, last_seen)
-  try: 
+  try:
       mycursor.execute(sql_update_seen, seen_val)
       mydb.commit()
       print("Last Seen Time for " + ta + " Updated Successfully")
@@ -212,26 +234,26 @@ def notifications_scraper_broken(ta):
         myTeamsMessage.send()
 
 def main():
-    for ta in threatactors:  
-        #sets module to proper TA for scraping 
+    for ta in threatactors:
+        #sets module to proper TA for scraping
         import importlib
         threatactor = "sites." + ta
-        threatactor = importlib.import_module(threatactor) 
-        ta_url = data['ta_urls'][ta]  
+        threatactor = importlib.import_module(threatactor)
+        ta_url = data['ta_urls'][ta]
         isup = check_status(ta_url,ta)
-        if isup == True: 
-            if screenshot == True: 
-                try: 
-                    screenshot_site(ta_url,ta)                                                                                                          
+        if isup == True:
+            if screenshot == True:
+                try:
+                    screenshot_site(ta_url,ta)
                 except:
-                    print("screenshot failed!")
-            try:  
+                    print("Screenshot for " + ta + " failed!")
+            try:
                 update_lastseen(ta,timestamp)
             except:
                 print("update last seen failed!")
-            try: 
-                threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url)
+            try:
+                threatactor.scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile)
             except:
-                print("Scraping for " + ta + " failed!")  
+                print("Scraping for " + ta + " failed!")
 if __name__== "__main__":
   main()

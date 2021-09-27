@@ -22,7 +22,7 @@ import sys
 sys.path.append("..")
 import allinone as aio
 
-def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url):
+def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
     victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
