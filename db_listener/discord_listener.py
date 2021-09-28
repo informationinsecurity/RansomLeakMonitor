@@ -32,6 +32,7 @@ async def on_message(message):
     if "!search victim" in message.content:
         victim = message.content 
         victim = victim.replace("!search victim","")
+        victim = victim.strip()
         print("Victim to search for is : " + victim)  
         dupecheck = "SELECT actor, victim, SUBSTRING(date,1,11) from rw_victims where victim like '%" + victim + "%'"
         mycursor.execute(dupecheck)
@@ -80,7 +81,9 @@ async def on_message(message):
             victim = message.content
             victim = victim.replace("!search victim","")
             print("Victim to search for is : " + victim)
+            victim = victim.strip()
             dupecheck = "SELECT actor, victim, SUBSTRING(date,1,11) from rw_victims where victim like '%" + victim + "%'"
+            print(dupecheck)
             mycursor.execute(dupecheck)
             duperesult = mycursor.fetchall()
             mycursor.close()
