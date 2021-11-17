@@ -18,71 +18,33 @@ import base64
 import yaml
 import os
 from discord_webhook import DiscordWebhook, DiscordEmbed
-from selenium import webdriver
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from stem import Signal
-from stem.control import Controller
 import sys
 sys.path.append("..")
 import allinone as aio
 
-#working pulling victims of AvosLocker
 
-def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
-    def new_identity():
-      with Controller.from_port(port = 9051) as controller:
-          controller.authenticate(password=tor_control_pass)
-          controller.signal(Signal.NEWNYM)
-
-#    os.popen(tor_ff_path)
-
-    binary=FirefoxBinary(ff_binary)
-    fp=FirefoxProfile(ff_profile)
-    fp.set_preference('extensions.torlauncher.start_tor',False)#note this
-    fp.set_preference('network.proxy.type',1)
-    fp.set_preference('network.proxy.socks', '127.0.0.1')
-    fp.set_preference('network.proxy.socks_port', 9050)
-    fp.set_preference("network.proxy.socks_remote_dns", True)
-    fp.update_preferences()
-
-    ###GET COOKIES FOR LOCKBIT#####
-    print("Jacking Cookies for AvosLocker - Please wait")
-    sel_driver = webdriver.Firefox(firefox_profile=fp,firefox_binary=binary)
-    print("URL IS " + ta_url)
-    sel_driver.get(ta_url)
-    #sel_driver.quit
-    #print(driver.page_source)
-    cookies = sel_driver.get_cookies()
-    str_cookie = str(cookies)
-    cookie = re.findall(r"('value': '[a-zA-Z0-9%._-]+)",str_cookie)
-    cookie = str(cookie)
-    cookie = cookie.replace('[\"\'value\': \'', '')
-    cookie = cookie.replace('\"]','')
-    cookie_format = "{\"session\": \"" + cookie + "\"}"
-    print(cookie_format)
-    cookie_format = json.loads(cookie_format)
-    sel_driver.quit()
+def scrape(ta_url,ta,proxies,timestamp,mydb,writedb,screenshot,workingdir,tbb_dir,imgbb_key,imgbb_url,tor_ff_path,tor_control_pass,ff_binary,ff_profile):
     victim_count = 0
     imgbb_image_url = ""
     mycursor = mydb.cursor()
+
+
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
-    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers, cookies=cookie_format)
+    page = requests.get(ta_url, timeout=30, proxies=proxies, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')
-    #working pulling victims of Lockbitv2
-    div = soup.find_all("div", class_="buttons")
+    baseurl = ta_url
+    baseurl = baseurl.replace("/blog.php", "")
+    div = soup.find_all("div", class_="d-flex justify-content-between btn-background")
     #pulls links for each victim post - otherwise names are truncated with ...
     for links in div:
         for victim_links in links.find_all("a", href=True):
             victim_links = victim_links['href']
-            victim_links = ta_url + victim_links
+            victim_links = baseurl + "/" + victim_links
             print("Pulling Victim from Page" + victim_links)
-            vicpage = requests.get(victim_links, timeout=30, headers=headers,cookies=cookie_format, proxies=proxies)
+            vicpage = requests.get(victim_links, timeout=30, proxies=proxies)
             vicsoup = BeautifulSoup(vicpage.content, 'html.parser')
-            vicdiv = vicsoup.find("h1")
+            vicdiv = vicsoup.find("h3")
             victim = vicdiv.text
-            victim = victim.split('-', 1)[0]
-            victim = victim.replace("'", "")
             victim = victim.strip()
             print(victim)
             date = timestamp
@@ -102,7 +64,6 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                 if writedb == True:
                     mycursor.execute(sql, val)
                     mydb.commit()
-
                 if screenshot == True:
                     time.sleep(3)
                     victim_screenshot = workingdir + "victims/" + victim + ".png"
@@ -115,15 +76,15 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                     try:
                         # start a virtual display
                         xvfb_display = start_xvfb()
-                        with TorBrowserDriver(tbb_dir) as tbb_driver:
-                            tbb_driver.load_url(victim_links)
-                            time.sleep(10)
-                            height = tbb_driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
-                            tbb_driver.set_window_size(900,height+100)
-                            tbb_driver.get_screenshot_as_file(out_img)
+                        with TorBrowserDriver(tbb_dir) as driver:
+                            driver.load_url(victim_links)
+                            time.sleep(3)
+                            height = driver.execute_script("return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
+                            driver.set_window_size(900,height+100)
+                            driver.get_screenshot_as_file(out_img)
                             print("Screenshot is saved as %s" % out_img)
 
-                        stop_xvfb(xvfb_display)
+                            stop_xvfb(xvfb_display)
 
                         #EDIT LATER TO GET VICTIM SCREENSHOTS INTO DB#####
                         #sql_insert_blob_query = """ INSERT INTO rw_images (id, timestamp, actor, photo) VALUES (NULL,%s,%s,%s)"""
@@ -134,7 +95,6 @@ def scrape(ta_url,ta,proxies,timestamp, mydb,writedb,screenshot,workingdir,tbb_d
                         #def get_base64_encoded_image(image_path):
                         #    with open(image_path, "rb") as img_file:
                         #        return base64.b64encode(img_file.read()).decode('utf-8')
-
                         #data = get_base64_encoded_image(ta_screenshot)
                         #encoded_fig = f"data:image/png;base64,{data}"
                         #print("Image saved to database")
